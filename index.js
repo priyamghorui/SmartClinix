@@ -83,11 +83,22 @@ app.get("/", (req, res) => {
 // });
 app.post("/submit", async (req, res) => {
   // console.log(req.body.massage);
-
+  let messages = [
+    ("system",
+    `You are a highly experienced medical expert specializing in radiology and diagnostics. I will provide you with a patient's medical report, ${req.body.massage} `),
+    ("human", req.body.flexRadioDefault),
+  ];
+  const response = await ai.models.generateContent({
+    model: "gemini-1.5-pro",
+    contents: messages,
+  });
+  // res.redirect(
+  //   `/details?data=${encodeURIComponent(req.body.massage)}&massage=${encodeURIComponent(
+  //     req.body.flexRadioDefault
+  //   )}`
+  // );
   res.redirect(
-    `/details?data=${encodeURIComponent(req.body.massage)}&massage=${encodeURIComponent(
-      req.body.flexRadioDefault
-    )}`
+    `/details?data=${encodeURIComponent(response.text)}`
   );
 });
 // app.post("/submit",upload.single("myFile"), async(req, res) => {
@@ -124,18 +135,18 @@ app.post("/submit", async (req, res) => {
 //         }
 // });
 app.get("/details", async (req, res) => {
-  console.log(req.query);
-  let messages = [
-    ("system",
-    `You are a highly experienced medical expert specializing in radiology and diagnostics. I will provide you with a patient's medical report, ${req.query.data} `),
-    ("human", req.query.massage),
-  ];
-  const response = await ai.models.generateContent({
-    model: "gemini-1.5-pro",
-    contents: messages,
-  });
-  console.log(response.text);
-  res.render("details", { response: response.text });
+  // console.log(req.query);
+  // let messages = [
+  //   ("system",
+  //   `You are a highly experienced medical expert specializing in radiology and diagnostics. I will provide you with a patient's medical report, ${req.query.data} `),
+  //   ("human", req.query.massage),
+  // ];
+  // const response = await ai.models.generateContent({
+  //   model: "gemini-1.5-pro",
+  //   contents: messages,
+  // });
+  // console.log(response.text);
+  res.render("details", { response: req.query.data });
 });
 // app.get("/demo", async(req, res) => {
 
