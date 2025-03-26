@@ -3,9 +3,9 @@ const path = require("path");
 // const favicon=require("serve-favicon")
 // const axios = require("axios");
 const fs = require("fs");
-const multer = require('multer');
-const officeParser = require('officeparser');
-const {GoogleGenAI} = require("@google/genai");
+const multer = require("multer");
+const officeParser = require("officeparser");
+const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const app = express();
@@ -17,28 +17,31 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, './uploads');
-    },
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    }
-  });
-  const upload = multer({ storage: storage,limits: { fileSize: 2000000 } ,fileFilter: function(req, file, cb) {
+  destination: (req, file, cb) => {
+    cb(null, "./uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2000000 },
+  fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
-  }});
-  function checkFileType(file, cb) {
-    const filetypes = /txt|pdf/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-  
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-       cb('Error: pdf or text file only! (pdf,txt)');
-     
-    }
+  },
+});
+function checkFileType(file, cb) {
+  const filetypes = /txt|pdf/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb("Error: pdf or text file only! (pdf,txt)");
   }
+}
 app.get("/", (req, res) => {
   res.render("index");
 });
@@ -54,7 +57,7 @@ app.get("/", (req, res) => {
 // **2. Further Investigations (Likely Recommended by Gynecologist):**
 
 // * **Blood Tests:**
-//     * **Hormone Profile:**  Measuring levels of LH, FSH, testosterone, estradiol, prolactin, and thyroid hormones will help confirm PCOS and rule out other hormonal imbalances.  An AMH (Anti-Mullerian Hormone) test can also be helpful in assessing ovarian reserve in PCOS.      
+//     * **Hormone Profile:**  Measuring levels of LH, FSH, testosterone, estradiol, prolactin, and thyroid hormones will help confirm PCOS and rule out other hormonal imbalances.  An AMH (Anti-Mullerian Hormone) test can also be helpful in assessing ovarian reserve in PCOS.
 //     * **Inflammatory Markers (CRP, ESR):** Elevated levels can suggest PID.
 //     * **STI Testing (Chlamydia and Gonorrhea):** These are common causes of PID and should be ruled out.
 
@@ -77,56 +80,67 @@ app.get("/", (req, res) => {
 //     //    console.log(a);
 //     res.render("demo",{response:data});
 
-       
 // });
-app.post("/submit",upload.single("myFile"), async(req, res) => {
-    const config = {
-        newlineDelimiter: " ",  // Separate new lines with a space instead of the default \n.
-        ignoreNotes: true       // Ignore notes while parsing presentation files like pptx or odp.
-    }
-    console.log(req.body.flexRadioDefault);
-    
-    if (!req.file) {
-        res.status(400).redirect("/");
-        return;
-        }
-        
-        // You can perform additional operations with the uploaded image here.
-        try {
-            // "data" string returned from promise here is the text parsed from the office file passed in the argument
-            const data = await officeParser.parseOfficeAsync(`./uploads/${req.file.originalname}`,config);
-            // data.replaceAll("&","and")
-            // console.log(data);
-         
-            fs.unlink(`./uploads/${req.file.originalname}`,(err) => {
-                if (err) {
-                  console.error("Error deleting file:", err);
-                } else {
-                  console.log("File deleted successfully!");
-                }
-              })
-            res.redirect(`/details?data=${encodeURIComponent(data)}&massage=${encodeURIComponent(req.body.flexRadioDefault)}`)
-        } catch (err) {
-            // resolve error
-            console.log(err);
-            res.redirect("/");
-        }
+app.post("/submit", async (req, res) => {
+  // console.log(req.body.massage);
+
+  res.redirect(
+    `/details?data=${encodeURIComponent(req.body.massage)}&massage=${encodeURIComponent(
+      req.body.flexRadioDefault
+    )}`
+  );
 });
-app.get("/details", async(req, res) => {
-    console.log(req.query);
-    let messages = [("system",`You are a highly experienced medical expert specializing in radiology and diagnostics. I will provide you with a patient's medical report, ${req.query.data} `),("human",req.query.massage ),]
-    const response = await ai.models.generateContent({
-        model: "gemini-1.5-pro",
-        contents: messages,
-    });
-    console.log(response.text);
-    res.render("details",{response:response.text});
+// app.post("/submit",upload.single("myFile"), async(req, res) => {
+//     const config = {
+//         newlineDelimiter: " ",  // Separate new lines with a space instead of the default \n.
+//         ignoreNotes: true       // Ignore notes while parsing presentation files like pptx or odp.
+//     }
+//     console.log(req.body.flexRadioDefault);
+
+//     if (!req.file) {
+//         res.status(400).redirect("/");
+//         return;
+//         }
+
+//         // You can perform additional operations with the uploaded image here.
+//         try {
+//             // "data" string returned from promise here is the text parsed from the office file passed in the argument
+//             const data = await officeParser.parseOfficeAsync(`./uploads/${req.file.originalname}`,config);
+//             // data.replaceAll("&","and")
+//             // console.log(data);
+
+//             fs.unlink(`./uploads/${req.file.originalname}`,(err) => {
+//                 if (err) {
+//                   console.error("Error deleting file:", err);
+//                 } else {
+//                   console.log("File deleted successfully!");
+//                 }
+//               })
+//             res.redirect(`/details?data=${encodeURIComponent(data)}&massage=${encodeURIComponent(req.body.flexRadioDefault)}`)
+//         } catch (err) {
+//             // resolve error
+//             console.log(err);
+//             res.redirect("/");
+//         }
+// });
+app.get("/details", async (req, res) => {
+  console.log(req.query);
+  let messages = [
+    ("system",
+    `You are a highly experienced medical expert specializing in radiology and diagnostics. I will provide you with a patient's medical report, ${req.query.data} `),
+    ("human", req.query.massage),
+  ];
+  const response = await ai.models.generateContent({
+    model: "gemini-1.5-pro",
+    contents: messages,
+  });
+  console.log(response.text);
+  res.render("details", { response: response.text });
 });
 // app.get("/demo", async(req, res) => {
-  
+
 //     res.render("demo");
 // });
-
 
 app.listen(process.env.PORT, () => {
   console.log("connected..");

@@ -133,18 +133,16 @@
 			</div>
 			
             <div class="container mt-5">
-                <form method="post" enctype="multipart/form-data" action="/submit">
+                <form method="post" action="/submit">
                   <div class="mb-3">
-                    <label for="formFile" class="form-label"
-                      >Please upload a valid medical report in TXT, PDF, or TEXT format for accurate analysis.</label
-                    >
-                    <input
-                      required
-                      name="myFile"
-                      class="form-control"
-                      type="file"
-                      id="formFile"
-                    />
+					<textarea
+					name="massage"
+					class="form-control"
+					placeholder="Paste your report here"
+					id="floatingTextarea2"
+					style="height: 100px"
+					required
+				  ></textarea>
                   </div>
                   <div class="form-check">
                     <input
@@ -195,7 +193,79 @@
                       Recommend the next steps (immediate doctor consultation, lifestyle changes, further tests, etc.).
                     </label>
                   </div>
-                  <button type="submit" class="btn btn-primary">Upload</button>
+                  <button  type="submit" class="btn btn-primary">Upload</button>
+				  <h4 style="margin-top: 6px;">After upload please wait few second for fetch details.....</h4>
+                </form>
+              </div>
+            <div class="container mt-5">
+                <form method="post" enctype="multipart/form-data" action="/submit">
+                  <div class="mb-3">
+                    <label for="formFile" class="form-label"
+                      >Please upload a valid medical report in TXT, PDF, or TEXT format for accurate analysis.</label
+                    >
+                    <input
+                      required
+					  disabled
+                      name="myFile"
+                      class="form-control"
+                      type="file"
+                      id="formFile"
+                    />
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="flexRadioDefault9"
+                      id="flexRadioDefault19"
+                      value="Analyze the report and explain the findings in simple terms"
+                      checked
+                    />
+                    <label class="form-check-label" for="flexRadioDefault19">
+                      Analyze the report and explain the findings in simple terms.
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="flexRadioDefault9"
+                      id="flexRadioDefault29"
+                      value="Identify any critical or abnormal values"
+                    />
+                    <label class="form-check-label" for="flexRadioDefault29">
+                      Identify any critical or abnormal values.
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="flexRadioDefault9"
+                      id="flexRadioDefault39"
+                      value="Determine the urgency level (Mild, Moderate, Severe, or Critical)"
+                    />
+                    <label class="form-check-label" for="flexRadioDefault39">
+                      Determine the urgency level (Mild, Moderate, Severe, or Critical).
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="flexRadioDefault9"
+                      id="flexRadioDefault49"
+                      value="Recommend the next steps (immediate doctor consultation, lifestyle changes, further tests, etc.)"
+                    />
+                    <label class="form-check-label" for="flexRadioDefault49">
+                      Recommend the next steps (immediate doctor consultation, lifestyle changes, further tests, etc.).
+                    </label>
+                  </div>
+				  <div style="display: flex;flex-direction: row;">
+
+					  <button disabled type="submit" class="btn btn-primary">Upload</button>
+					  <h4 style="margin-left: 12px;display: flex;align-items: center;">Sorry, this service is temporarily off</h4>
+					</div>
 				  <p>After upload please wait few second for fetch details.....</p>
                 </form>
               </div>
